@@ -2,8 +2,3 @@
 .idea
 .mod
 .sum
-./backups
-./backups/template.html
-./backups/index.html
-./backups/backup.go
-./backups/backupWithTemplates.go
