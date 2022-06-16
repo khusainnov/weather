@@ -33,7 +33,10 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		tml.ExecuteTemplate(w, "form.gohtml", nil)
+		err := tml.ExecuteTemplate(w, "form.gohtml", nil)
+		if err != nil {
+			logrus.Errorf("Cannot execute template \"form.gohtml\", due to error: %s\n", err.Error())
+		}
 	})
 
 	r.HandleFunc("/weather", Weather)
@@ -75,7 +78,7 @@ func Weather(w http.ResponseWriter, r *http.Request) {
 		logrus.Errorf("Error in unmarshalling resoonse body, err: %s", err.Error())
 	}
 
-	tml.ExecuteTemplate(w, "index.gohtml", weatherBody)
+	err = tml.ExecuteTemplate(w, "index.gohtml", weatherBody)
 	if err != nil {
 		logrus.Errorf("Cannot load and parse html files, due to error: %s\n", err.Error())
 	}
