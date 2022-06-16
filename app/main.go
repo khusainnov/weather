@@ -34,7 +34,6 @@ func main() {
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tml.ExecuteTemplate(w, "form.gohtml", nil)
-
 	})
 
 	r.HandleFunc("/weather", Weather)
@@ -48,13 +47,11 @@ func main() {
 
 func Weather(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
-		http.Redirect(w, r,"/", http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	city := r.FormValue("city")
-
-	var all entity.PageView
 
 	API := fmt.Sprintf("https://api.weatherapi.com/v1/current.json?key=%s&q=%s&aqi=no", os.Getenv("WEATHER_API_TOKEN"), city)
 
@@ -78,17 +75,8 @@ func Weather(w http.ResponseWriter, r *http.Request) {
 		logrus.Errorf("Error in unmarshalling resoonse body, err: %s", err.Error())
 	}
 
-	all.Country = weatherBody.Location.Country
-	all.City = weatherBody.Location.Region
-	all.Airport = weatherBody.Location.Name
-	all.Date = weatherBody.Location.Localtime
-	all.TemperatureC = weatherBody.Current.TempC
-	all.TemperatureF = weatherBody.Current.TempF
-
-	fmt.Println(all)
-
-	tml.ExecuteTemplate(w, "index.gohtml", all)
+	tml.ExecuteTemplate(w, "index.gohtml", weatherBody)
 	if err != nil {
-		logrus.Errorf("Cannon load and parse html files, due to error: %s\n", err.Error())
+		logrus.Errorf("Cannot load and parse html files, due to error: %s\n", err.Error())
 	}
 }
