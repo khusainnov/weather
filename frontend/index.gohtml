@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <style>
+        h1 {text-align: center;}
+        b {text-align: center; font-size: 20px}
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Weather in {{ .City }}</title>
+</head>
+<body style="background-color:#b3e5ec;">
+<b> County: {{ .Country }}<br></b>
+<b> City: {{ .City }} <br></b>
+<b> Airport: {{ .Airport }} <br></b>
+<b> Local Time: {{ .Date }} <br></b>
+<b> Temperature: {{ .TemperatureC }}, C / {{ .TemperatureF }}, F <br></b>
+</body>
+</html>
