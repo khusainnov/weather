@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/khusainnov/weather/internal/entity"
 	"github.com/sirupsen/logrus"
@@ -56,8 +57,23 @@ func (h *Handler) Weather(w http.ResponseWriter, r *http.Request) {
 		logrus.Errorf("Error in unmarshalling resoonse body, err: %s", err.Error())
 	}
 
+	logrus.Infoln("Loading .gohtml files and printing there data")
 	err = tml.ExecuteTemplate(w, "index.gohtml", weatherBody)
 	if err != nil {
 		logrus.Errorf("Cannot load and parse html files, due to error: %s", err.Error())
 	}
+
+	_, err = h.services.Weather.WriteCity(weatherBody.Location.Region)
+	if err != nil {
+		logrus.Errorf("Error to write city into db, due to error: %s", err.Error())
+	}
+}
+
+func (h *Handler) WeatherWG(w http.ResponseWriter, r *http.Request) {
+
+	// TODO: accept a list of cities and show all data in one time, concurrency load data
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
 }

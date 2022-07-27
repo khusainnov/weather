@@ -27,12 +27,13 @@
 <body style="background-color:powderblue;">
 <h1>Weather form</h1>
 
-<form action="/weather/form" method="GET">
+<form action="/weather" method="GET">
 
     <b><label for="cId">City</label></b>
-    <input type="text" name="city" id="cId" placeholder="City">
+    <input type="text" name="city" id="cId" placeholder="City"><br><br>
 
-    <input style="color: coral" type="submit">
+    <button type="submit" style="color: coral">Get Weather</button>
+{{/*    <input style="color: coral" type="submit">*/}}
 </form>
 
 </body>
