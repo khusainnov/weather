@@ -1,6 +1,6 @@
 db:
   host: "localhost"
-  port: "5432"
-  user: "russo"
+  port: "5434"
+  user: "postgres"
   dbname: "weather_api"
   sslmode: "disable"

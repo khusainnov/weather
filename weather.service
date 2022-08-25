@@ -1,0 +1,11 @@
+[Unit]
+
+Description=weather app
+
+[Service]
+Environment=PORT=80
+Type=simple
+Restart=always
+RestartSec=5s
+WorkingDirectory=/root
+ExecStart=/root/weather

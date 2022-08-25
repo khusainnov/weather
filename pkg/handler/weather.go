@@ -16,7 +16,7 @@ import (
 var tml *template.Template
 
 func init() {
-	tml = template.Must(template.ParseGlob("/Users/rustamkhusainov/DocumentsAir/go-workspace/github/russodream/weather/frontend/*.gohtml"))
+	tml = template.Must(template.ParseGlob("./frontend/*.gohtml"))
 }
 
 func (h *Handler) Form(w http.ResponseWriter, r *http.Request) {
