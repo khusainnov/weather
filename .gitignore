@@ -1,6 +1,3 @@
-config/.env
 .idea
-Makefile
-Dockerfile
 weather
 weather.service
