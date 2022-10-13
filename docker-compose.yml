@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    container_name: "weather-app_v1.0"
+    environment:
+      - PG_HOST=postgres-db
+      - PG_PORT=5432
+      - PG_DB_NAME=postgres
+      - PG_USER=postgres
+      - PG_PASSWORD=qwerty
+      - PG_SSL_MODE=disable
+    tty: true
+    restart: on-failure
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres-db
+    networks:
+      - fullstack
+    volumes:
+      - .:/app
+
+  postgres-db:
+    image: postgres:latest
+    container_name: "weather-db_v1.0"
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=qwerty
+      - POSTGRES_DB=postgres
+      - POSTGRES_HOST=postgres-db
+    networks:
+      - fullstack
+
+networks:
+  fullstack:
+    driver: bridge

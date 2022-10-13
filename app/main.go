@@ -28,13 +28,22 @@ func main() {
 
 	logrus.Infoln("Initializing DB")
 	db, err := repository.NewPostgresDB(repository.Config{
+		Host:     os.Getenv("PG_HOST"),
+		Port:     os.Getenv("PG_PORT"),
+		User:     os.Getenv("PG_USER"),
+		DBName:   os.Getenv("PG_DB_NAME"),
+		SSLMode:  os.Getenv("PG_SSL_MODE"),
+		Password: os.Getenv("PG_PASSWORD"),
+	})
+
+	/*db, err := repository.NewPostgresDB(repository.Config{
 		Host:     viper.GetString("db.host"),
 		Port:     viper.GetString("db.port"),
 		Username: viper.GetString("db.user"),
 		DBName:   viper.GetString("db.dbname"),
 		SSLMode:  viper.GetString("db.sslmode"),
 		Password: os.Getenv("DB_PASSWORD"),
-	})
+	})*/
 
 	if err != nil {
 		logrus.Errorf("Cannot run db, due to error: %s", err.Error())
