@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 
 services:
   app:
@@ -11,12 +11,16 @@ services:
       - PG_USER=postgres
       - PG_PASSWORD=qwerty
       - PG_SSL_MODE=disable
+      - REDIS_NAME=weather-redis-db_v1.0
+      - REDIS_PORT=6001
+      - REDIS_PASSWORD=mypassword
     tty: true
     restart: on-failure
     ports:
       - "80:80"
     depends_on:
       - postgres-db
+      - redis-db
     networks:
       - fullstack
     volumes:
@@ -27,11 +31,28 @@ services:
     container_name: "weather-db_v1.0"
     ports:
       - "5434:5432"
+    expose:
+      - "5434"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=qwerty
       - POSTGRES_DB=postgres
       - POSTGRES_HOST=postgres-db
+    networks:
+      - fullstack
+
+  redis-db:
+    image: redis:latest
+    container_name: "weather-redis-db_v1.0"
+    command: "--port 6001 \ --requirepass mypassword"
+    ports:
+      - "6001:6379"
+    expose:
+      - "6001"
+    environment:
+      - REDIS_DB_NAME=weather-redis-db_v1.0
+      - REDIS_DB_PORT=6001
+      - REDIS_DB_PASSWORD=mypassword
     networks:
       - fullstack
 

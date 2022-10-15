@@ -1,6 +1,8 @@
 package service
 
-import "github.com/khusainnov/weather/pkg/repository"
+import (
+	"github.com/khusainnov/weather/pkg/repository"
+)
 
 type WriteService struct {
 	repo repository.Weather

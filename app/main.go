@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/khusainnov/weather"
@@ -12,6 +15,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
+
+var ctx = context.Background()
 
 func main() {
 	logrus.SetFormatter(new(logrus.JSONFormatter))
@@ -26,8 +31,22 @@ func main() {
 		logrus.Errorf("Cannot reading config from .yml, due to error: %s", err.Error())
 	}
 
-	logrus.Infoln("Initializing DB")
-	db, err := repository.NewPostgresDB(repository.Config{
+	logrus.Infoln("Initializing RedisDB")
+	rdb, err := repository.NewRedisDB(repository.ConfigRedis{
+		Port: fmt.Sprintf("%s:%s", os.Getenv("REDIS_NAME"), os.Getenv("REDIS_PORT")),
+		/*"weather-redis-db_v1.0:6380"*/
+		Password: os.Getenv("REDIS_PASSWORD"),
+		DB:       0,
+	}, ctx)
+
+	if err != nil {
+		logrus.Errorf("Cannot run redis, due to error: %s", err.Error())
+	}
+
+	_ = rdb.Set(ctx, "key1", os.Getenv("WEATHER_API_TOKEN"), time.Second*5).Err()
+
+	logrus.Infoln("Initializing PostgresDB")
+	db, err := repository.NewPostgresDB(repository.ConfigPG{
 		Host:     os.Getenv("PG_HOST"),
 		Port:     os.Getenv("PG_PORT"),
 		User:     os.Getenv("PG_USER"),
@@ -36,24 +55,32 @@ func main() {
 		Password: os.Getenv("PG_PASSWORD"),
 	})
 
-	/*db, err := repository.NewPostgresDB(repository.Config{
-		Host:     viper.GetString("db.host"),
-		Port:     viper.GetString("db.port"),
-		Username: viper.GetString("db.user"),
-		DBName:   viper.GetString("db.dbname"),
-		SSLMode:  viper.GetString("db.sslmode"),
-		Password: os.Getenv("DB_PASSWORD"),
-	})*/
-
+	/*	db, err := repository.NewPostgresDB(repository.ConfigPG{
+			Host:     viper.GetString("db.host"),
+			Port:     viper.GetString("db.port"),
+			User:     viper.GetString("db.user"),
+			DBName:   viper.GetString("db.dbname"),
+			SSLMode:  viper.GetString("db.sslmode"),
+			Password: os.Getenv("DB_PASSWORD"),
+		})
+	*/
 	if err != nil {
 		logrus.Errorf("Cannot run db, due to error: %s", err.Error())
 	}
 
 	logrus.Infoln("Initializing repository")
-	repos := repository.NewRepository(db)
+	repos := repository.NewRepository(db, rdb)
+
+	val, _ := rdb.Get(ctx, "key1").Result()
+
+	fmt.Printf("\n%s\n", val)
 
 	logrus.Infoln("Initializing services")
 	services := service.NewService(repos)
+
+	val, _ = rdb.Get(ctx, "key1").Result()
+
+	fmt.Printf("\n%s\n", val)
 
 	logrus.Infoln("Initializing handlers")
 	handlers := handler.NewHandler(services)

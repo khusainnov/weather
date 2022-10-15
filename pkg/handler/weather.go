@@ -35,6 +35,34 @@ func (h *Handler) Weather(w http.ResponseWriter, r *http.Request) {
 
 	city := r.FormValue("city")
 
+	checkedBody, err := h.services.CheckCity(city)
+	if err != nil {
+		logrus.Errorf("Error in checking cached city: %s", err.Error())
+	}
+
+	if len(checkedBody) != 0 {
+		weatherBody := &entity.Weather{}
+
+		logrus.Infoln("Unmarshalling response body from cache")
+		err = json.Unmarshal(checkedBody, weatherBody)
+		if err != nil {
+			logrus.Errorf("Error in unmarshalling resoonse body, err: %s", err.Error())
+		}
+
+		logrus.Infoln("Loading .gohtml files and printing there data")
+		err = tml.ExecuteTemplate(w, "index.gohtml", weatherBody)
+		if err != nil {
+			logrus.Errorf("Cannot load and parse html files, due to error: %s", err.Error())
+		}
+
+		_, err = h.services.Weather.WriteCity(weatherBody.Location.Region)
+		if err != nil {
+			logrus.Errorf("Error to write city into db, due to error: %s", err.Error())
+		}
+
+		return
+	}
+
 	API := fmt.Sprintf("https://api.weatherapi.com/v1/current.json?key=%s&q=%s&aqi=no", os.Getenv("WEATHER_API_TOKEN"), city)
 
 	logrus.Infof("Sending request to get data from %s\n", API)
@@ -61,6 +89,11 @@ func (h *Handler) Weather(w http.ResponseWriter, r *http.Request) {
 	err = tml.ExecuteTemplate(w, "index.gohtml", weatherBody)
 	if err != nil {
 		logrus.Errorf("Cannot load and parse html files, due to error: %s", err.Error())
+	}
+
+	err = h.services.WriteCacheCity(weatherBody.Location.Region, body)
+	if err != nil {
+		logrus.Errorf("Error in caching data: %s", err.Error())
 	}
 
 	_, err = h.services.Weather.WriteCity(weatherBody.Location.Region)
