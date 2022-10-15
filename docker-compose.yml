@@ -51,7 +51,7 @@ services:
       - "6001"
     environment:
       - REDIS_DB_NAME=weather-redis-db_v1.0
-      - REDIS_DB_PORT=6001
+      - REDIS_DB_PORT=6380
       - REDIS_DB_PASSWORD=mypassword
     networks:
       - fullstack
