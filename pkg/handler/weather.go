@@ -35,16 +35,18 @@ func (h *Handler) Weather(w http.ResponseWriter, r *http.Request) {
 
 	city := r.FormValue("city")
 
-	checkedBody, err := h.services.CheckCity(city)
+	ok, err := h.services.CheckCacheCity(city)
 	if err != nil {
 		logrus.Errorf("Error in checking cached city: %s", err.Error())
 	}
 
-	if len(checkedBody) != 0 {
+	if ok == 1 {
 		weatherBody := &entity.Weather{}
 
+		cacheBody, err := h.services.GetCacheCity(city)
+
 		logrus.Infoln("Unmarshalling response body from cache")
-		err = json.Unmarshal(checkedBody, weatherBody)
+		err = json.Unmarshal(cacheBody, weatherBody)
 		if err != nil {
 			logrus.Errorf("Error in unmarshalling resoonse body, err: %s", err.Error())
 		}

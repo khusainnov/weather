@@ -17,7 +17,16 @@ func NewCheckRedis(rdb *redis.Client) *CheckRedis {
 	return &CheckRedis{rdb: rdb}
 }
 
-func (cr *CheckRedis) CheckCity(city string) ([]byte, error) {
+func (cr *CheckRedis) CheckCacheCity(city string) (int64, error) {
+	resp, err := cr.rdb.Exists(ctx, city).Result()
+	if err != nil {
+		return 0, err
+	}
+
+	return resp, nil
+}
+
+func (cr *CheckRedis) GetCacheCity(city string) ([]byte, error) {
 	var rd []byte
 
 	rd, err := cr.rdb.Get(ctx, city).Bytes()

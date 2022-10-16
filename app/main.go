@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/khusainnov/weather"
@@ -33,17 +32,13 @@ func main() {
 
 	logrus.Infoln("Initializing RedisDB")
 	rdb, err := repository.NewRedisDB(repository.ConfigRedis{
-		Port: fmt.Sprintf("%s:%s", os.Getenv("REDIS_NAME"), os.Getenv("REDIS_PORT")),
-		/*"weather-redis-db_v1.0:6380"*/
+		Port:     fmt.Sprintf("%s:%s", os.Getenv("REDIS_NAME"), os.Getenv("REDIS_PORT")),
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,
 	}, ctx)
-
 	if err != nil {
 		logrus.Errorf("Cannot run redis, due to error: %s", err.Error())
 	}
-
-	_ = rdb.Set(ctx, "key1", os.Getenv("WEATHER_API_TOKEN"), time.Second*5).Err()
 
 	logrus.Infoln("Initializing PostgresDB")
 	db, err := repository.NewPostgresDB(repository.ConfigPG{
@@ -71,16 +66,8 @@ func main() {
 	logrus.Infoln("Initializing repository")
 	repos := repository.NewRepository(db, rdb)
 
-	val, _ := rdb.Get(ctx, "key1").Result()
-
-	fmt.Printf("\n%s\n", val)
-
 	logrus.Infoln("Initializing services")
 	services := service.NewService(repos)
-
-	val, _ = rdb.Get(ctx, "key1").Result()
-
-	fmt.Printf("\n%s\n", val)
 
 	logrus.Infoln("Initializing handlers")
 	handlers := handler.NewHandler(services)

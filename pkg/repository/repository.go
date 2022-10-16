@@ -14,7 +14,8 @@ type Weather interface {
 
 type WeatherCache interface {
 	WriteCacheCity(city string, wd []byte) error
-	CheckCity(city string) ([]byte, error)
+	GetCacheCity(city string) ([]byte, error)
+	CheckCacheCity(city string) (int64, error)
 }
 
 type Repository struct {
