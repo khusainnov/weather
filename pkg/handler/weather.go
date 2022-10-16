@@ -93,7 +93,7 @@ func (h *Handler) Weather(w http.ResponseWriter, r *http.Request) {
 		logrus.Errorf("Cannot load and parse html files, due to error: %s", err.Error())
 	}
 
-	err = h.services.WriteCacheCity(weatherBody.Location.Region, body)
+	err = h.services.WriteCacheCity(city, body)
 	if err != nil {
 		logrus.Errorf("Error in caching data: %s", err.Error())
 	}

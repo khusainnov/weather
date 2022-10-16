@@ -3,3 +3,4 @@ Makefile
 docker-compose.yml
 Dockerfile
 .env
+text.txt

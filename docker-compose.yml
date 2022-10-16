@@ -12,7 +12,7 @@ services:
       - PG_PASSWORD=qwerty
       - PG_SSL_MODE=disable
       - REDIS_NAME=weather-redis-db_v1.0
-      - REDIS_PORT=6001
+      - REDIS_PORT=6379
       - REDIS_PASSWORD=mypassword
     tty: true
     restart: on-failure
@@ -44,7 +44,7 @@ services:
   redis-db:
     image: redis:latest
     container_name: "weather-redis-db_v1.0"
-    command: "--port 6001 \ --requirepass mypassword"
+#    command: "--port 6001 \ --requirepass mypassword"
     ports:
       - "6001:6379"
     expose:
