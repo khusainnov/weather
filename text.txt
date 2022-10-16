@@ -1,3 +1,0 @@
-Command for running "redis-cli" into docker container
-
-redis-server --daemonize yes
