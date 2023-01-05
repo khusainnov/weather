@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/khusainnov/weather"
 	"github.com/khusainnov/weather/pkg/handler"
@@ -49,19 +50,15 @@ func main() {
 		SSLMode:  os.Getenv("PG_SSL_MODE"),
 		Password: os.Getenv("PG_PASSWORD"),
 	})
-
-	/*	db, err := repository.NewPostgresDB(repository.ConfigPG{
-			Host:     viper.GetString("db.host"),
-			Port:     viper.GetString("db.port"),
-			User:     viper.GetString("db.user"),
-			DBName:   viper.GetString("db.dbname"),
-			SSLMode:  viper.GetString("db.sslmode"),
-			Password: os.Getenv("DB_PASSWORD"),
-		})
-	*/
 	if err != nil {
 		logrus.Errorf("Cannot run db, due to error: %s", err.Error())
 	}
+	defer func(db *sqlx.DB) {
+		err = db.Close()
+		if err != nil {
+			logrus.Errorf("cannot close db connection, %v", err)
+		}
+	}(db)
 
 	logrus.Infoln("Initializing repository")
 	repos := repository.NewRepository(db, rdb)

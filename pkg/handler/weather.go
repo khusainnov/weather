@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/khusainnov/weather/internal/entity"
@@ -34,7 +35,8 @@ func (h *Handler) Weather(w http.ResponseWriter, r *http.Request) {
 	}
 
 	city := r.FormValue("city")
-
+	city = strings.Replace(city, " ", "%20", -1)
+	logrus.Infof("CITY: %s", city)
 	ok, err := h.services.CheckCacheCity(city)
 	if err != nil {
 		logrus.Errorf("Error in checking cached city: %s", err.Error())
